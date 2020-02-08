@@ -16,7 +16,7 @@ object UserHolder {
                 if (!map.containsKey(user.login)) {
                     map[user.login] = user
                 } else {
-                    throw IllegalArgumentException("A user with this phone already exists")
+                    throw IllegalArgumentException("A user with this email already exists")
                 }
             }
     }
@@ -27,10 +27,10 @@ object UserHolder {
     ): User {
         return User.makeUser(fullName, phone = rawPhone)
             .also { user ->
-                if (!map.containsKey(user.login) && checkValidPhone(user.login)) {
-                    map[user.login] = user
-                } else {
-                    throw IllegalArgumentException("A user with this phone already exists")
+                when{
+                    !checkValidPhone(user.login) -> throw IllegalArgumentException("Enter a valid phone number starting with a + and containing 11 digits")
+                    !map.containsKey(user.login) -> map[user.login] = user
+                    else -> throw IllegalArgumentException("A user with this phone already exists")
                 }
             }
     }
