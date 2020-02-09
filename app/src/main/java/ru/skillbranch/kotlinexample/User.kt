@@ -37,9 +37,16 @@ class User private constructor(
         }
         get() = _login!!
 
-    private val salt: String by lazy {
-        ByteArray(16).also { SecureRandom().nextBytes(it) }.toString()
+    private var salt: String? = null
+    get() {
+        return when {
+            field != null && field!!.isNotEmpty() -> field
+            else -> ByteArray(16).also { SecureRandom().nextBytes(it) }.toString().also {
+                field = it
+            }
+        }
     }
+
     private lateinit var passwordHash: String
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
@@ -68,6 +75,18 @@ class User private constructor(
         passwordHash = encrypt(code)
         accessCode = code
         sendAccessCodeToUser(rawPhone, code)
+    }
+
+    constructor(
+        firstName: String,
+        lastName: String?,
+        email: String?,
+        rawPhone: String?,
+        salt:String,
+        hash: String
+    ) : this (firstName, lastName, rawPhone = rawPhone, email = email, meta = mapOf("src" to "csv")){
+        passwordHash = hash
+        this.salt = salt
     }
 
     init {
