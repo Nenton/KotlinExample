@@ -88,10 +88,8 @@ object UserHolder {
                 else -> null
             }
             val passSalt = split[2].split(":")
-            val user = User(firstName, lastName, email, phone, passSalt[0], passSalt[1])
-            when {
-                phone != null -> map[phone] = user
-                email != null -> map[email] = user
+            val user = User(firstName, lastName, email, phone, passSalt[0], passSalt[1]).also {
+                map[it.login] = it
             }
             users.add(user)
         }
