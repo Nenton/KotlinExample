@@ -27,7 +27,7 @@ object UserHolder {
     ): User {
         return User.makeUser(fullName, phone = rawPhone)
             .also { user ->
-                when{
+                when {
                     !checkValidPhone(user.login) -> throw IllegalArgumentException("Enter a valid phone number starting with a + and containing 11 digits")
                     !map.containsKey(user.login) -> map[user.login] = user
                     else -> throw IllegalArgumentException("A user with this phone already exists")
@@ -69,11 +69,16 @@ object UserHolder {
         user?.updateAccessCode()
     }
 
-    fun importUsers(list: List<String>): List<User>{
+    fun importUsers(list: List<String>): List<User> {
         val users: MutableList<User> = mutableListOf()
         for (line in list) {
             val split = line.split(";")
             val fullName = split[0].trim().split(" ")
+            val firstName = fullName.first()
+            val lastName = when {
+                fullName.size > 1 -> fullName.last()
+                else -> null
+            }
             val phone = when {
                 split[3].isNotEmpty() -> split[3]
                 else -> null
@@ -83,7 +88,12 @@ object UserHolder {
                 else -> null
             }
             val passSalt = split[2].split(":")
-            users.add(User(fullName[0], fullName[1], email, phone, passSalt[0], passSalt[1]))
+            val user = User(firstName, lastName, email, phone, passSalt[0], passSalt[1])
+            when {
+                phone != null -> map[phone] = user
+                email != null -> map[email] = user
+            }
+            users.add(user)
         }
         return users
     }
