@@ -1,7 +1,5 @@
 package ru.skillbranch.kotlinexample
 
-import ru.skillbranch.kotlinexample.extensions.dropLastUntil
-
 /**
  * @author Susev Sergey
  */
@@ -71,10 +69,8 @@ object UserHolder {
         user?.updateAccessCode()
     }
 
-    // " John Doe ;JohnDoe@unknow.com;[B@7591083d:c6adb4becdc64e92857e1e2a0fd6af84;;"
     fun importUsers(list: List<String>): List<User>{
         val users: MutableList<User> = mutableListOf()
-        users.dropLastUntil { it.login == "2" }
         for (line in list) {
             val split = line.split(";")
             val fullName = split[0].trim().split(" ")
